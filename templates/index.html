@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sprint Board</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Sprint Board</h1>
+    <div id="board">
+        <div class="column" data-status="todo">
+            <h2>To Do</h2>
+            <div class="tasks"></div>
+        </div>
+        <div class="column" data-status="in_progress">
+            <h2>In Progress (max 3)</h2>
+            <div class="tasks"></div>
+        </div>
+        <div class="column" data-status="done">
+            <h2>Done</h2>
+            <div class="tasks"></div>
+        </div>
+    </div>
+    <input type="text" id="new-task-input" placeholder="New task title">
+    <button id="add-task-btn">Add Task</button>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
