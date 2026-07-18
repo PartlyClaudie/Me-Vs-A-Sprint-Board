@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, render_template
+from logic import can_move_task
 
 app = Flask(__name__)
 
@@ -39,19 +40,13 @@ def create_task():
 
 @app.route("/api/tasks/<int:task_id>/move", methods=["PUT"])
 def move_task(task_id):
-    if task_id not in tasks:
-        return jsonify({"error": "task not found"}), 404
-
     data = request.get_json()
     new_status = data.get("status")
 
-    if new_status not in ("todo", "in_progress", "done"):
-        return jsonify({"error": "invalid status"}), 400
-
-    if new_status in WIP_LIMIT:
-        current_count = sum(1 for t in tasks.values() if t["status"] == new_status)
-        if current_count >= WIP_LIMIT[new_status]:
-            return jsonify({"error": f"WIP limit reached for {new_status}"}), 409
+    allowed, error = can_move_task(tasks, task_id, new_status)
+    if not allowed:
+        status_code = 404 if error == "task not found" else (409 if "WIP limit" in error else 400)
+        return jsonify({"error": error}), status_code
 
     tasks[task_id]["status"] = new_status
     return jsonify(tasks[task_id])
