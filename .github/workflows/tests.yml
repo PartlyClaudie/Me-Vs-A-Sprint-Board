@@ -1,0 +1,45 @@
+name: Sprint Board Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright browsers
+        run: playwright install --with-deps
+
+      - name: Run unit and API tests
+        run: pytest tests/test_logic.py tests/test_api.py -v
+
+      - name: Start Flask server in background
+        run: |
+          python app.py &
+          sleep 3
+
+      - name: Wait for server to be ready
+        run: |
+          for i in {1..10}; do
+            curl -sf http://127.0.0.1:5000 && break
+            echo "Waiting for server..."
+            sleep 1
+          done
+
+      - name: Run E2E tests
+        run: pytest tests/test_board_e2e.py -v
