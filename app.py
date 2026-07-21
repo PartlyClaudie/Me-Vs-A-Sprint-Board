@@ -60,6 +60,14 @@ def delete_task(task_id):
     del tasks[task_id]
     return "", 204
 
+@app.route("/api/reset", methods=["POST"])
+def reset():
+    tasks.clear()
+    global next_id
+    next_id = 1
+    return "", 204
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
